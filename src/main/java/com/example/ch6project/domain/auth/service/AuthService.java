@@ -3,6 +3,8 @@ package com.example.ch6project.domain.auth.service;
 import com.example.ch6project.common.exception.CustomException;
 import com.example.ch6project.common.exception.ErrorCode;
 import com.example.ch6project.common.security.JwtUtil;
+import com.example.ch6project.domain.auth.dto.LoginRequest;
+import com.example.ch6project.domain.auth.dto.LoginResponse;
 import com.example.ch6project.domain.auth.dto.SignupRequest;
 import com.example.ch6project.domain.auth.dto.SignupResponse;
 import com.example.ch6project.domain.user.entity.User;
@@ -36,5 +38,19 @@ public class AuthService {
 
         User savedUser = userRepository.save(user);
         return SignupResponse.from(savedUser);
+    }
+
+    @Transactional(readOnly = true)
+    public LoginResponse login(LoginRequest request) {
+        User user = userRepository.findByLoginId(request.loginId())
+                .orElseThrow(() -> new CustomException(ErrorCode.INVALID_CREDENTIALS));
+
+        if (!passwordEncoder.matches(request.password(), user.getPassword())) {
+            throw new CustomException(ErrorCode.INVALID_CREDENTIALS);
+        }
+
+        String token = jwtUtil.createToken(user.getId());
+
+        return new LoginResponse(token);
     }
 }
