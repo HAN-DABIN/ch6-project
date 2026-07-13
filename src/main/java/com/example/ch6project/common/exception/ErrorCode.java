@@ -9,6 +9,7 @@ public enum ErrorCode {
     // 400 BAD_REQUEST
     VALIDATION_FAILED(HttpStatus.BAD_REQUEST, "VALIDATION_FAILED", "입력값이 올바르지 않습니다."),
     INVALID_REQUEST(HttpStatus.BAD_REQUEST, "INVALID_REQUEST", "잘못된 요청입니다."),
+    LOGIN_ID_DUPLICATE(HttpStatus.CONFLICT, "LOGIN_ID_DUPLICATE", "이미 사용 중인 ID입니다."),
     INVALID_CHARGE_AMOUNT(HttpStatus.BAD_REQUEST, "INVALID_CHARGE_AMOUNT", "충전 금액은 0보다 커야 합니다."),
     INVALID_MENU_PRICE(HttpStatus.BAD_REQUEST, "INVALID_MENU_PRICE", "메뉴 가격이 올바르지 않습니다."),
     INVALID_ORDER_AMOUNT(HttpStatus.BAD_REQUEST, "INVALID_ORDER_AMOUNT", "주문 금액이 올바르지 않습니다."),
