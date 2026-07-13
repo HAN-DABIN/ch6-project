@@ -13,6 +13,12 @@ public enum ErrorCode {
     INVALID_MENU_PRICE(HttpStatus.BAD_REQUEST, "INVALID_MENU_PRICE", "메뉴 가격이 올바르지 않습니다."),
     INVALID_ORDER_AMOUNT(HttpStatus.BAD_REQUEST, "INVALID_ORDER_AMOUNT", "주문 금액이 올바르지 않습니다."),
 
+    // 401 UNAUTHORIZED
+    UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "UNAUTHORIZED", "로그인이 필요합니다."),
+    INVALID_CREDENTIALS(HttpStatus.UNAUTHORIZED, "INVALID_CREDENTIALS", "아이디 또는 비밀번호가 올바르지 않습니다."),
+    INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "INVALID_TOKEN", "유효하지 않은 토큰입니다."),
+    EXPIRED_TOKEN(HttpStatus.UNAUTHORIZED, "EXPIRED_TOKEN", "만료된 토큰입니다."),
+
     // 404 NOT_FOUND
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "USER_NOT_FOUND", "사용자를 찾을 수 없습니다."),
     MENU_NOT_FOUND(HttpStatus.NOT_FOUND, "MENU_NOT_FOUND", "메뉴를 찾을 수 없습니다."),
