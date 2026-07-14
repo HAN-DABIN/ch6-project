@@ -31,4 +31,15 @@ public class Order extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private OrderStatus status;
+
+    public Order(User user, Menu menu, Long orderPrice, OrderStatus status) {
+        this.user = user;
+        this.menu = menu;
+        this.orderPrice = orderPrice;
+        this.status = status;
+    }
+
+    public static Order create(User user, Menu menu, Long orderPrice) {
+        return new Order(user, menu, orderPrice, OrderStatus.COMPLETED);
+    }
 }

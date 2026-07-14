@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "payment")
+@Table(name = "payments")
 public class Payment extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,4 +31,15 @@ public class Payment extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private PaymentStatus status;
+
+    public Payment(Order order, User user, Long amount, PaymentStatus status) {
+        this.order = order;
+        this.user = user;
+        this.amount = amount;
+        this.status = status;
+    }
+
+    public static Payment create(Order order, User user, Long amount) {
+        return new Payment(order, user, amount, PaymentStatus.COMPLETED);
+    }
 }
