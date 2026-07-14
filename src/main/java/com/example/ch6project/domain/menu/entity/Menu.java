@@ -28,4 +28,10 @@ public class Menu extends BaseTimeEntity {
     public boolean isActive() {
         return this.status == MenuStatus.ACTIVE;
     }
+
+    public Menu(String name, Long price, MenuStatus status) {
+        this.name = name;
+        this.price = price;
+        this.status = status;
+    }
 }
