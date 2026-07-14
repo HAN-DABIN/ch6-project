@@ -27,7 +27,7 @@ public class PointService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        Point point = pointRepository.findByUserId(userId)
+        Point point = pointRepository.findByUserIdForUpdate(userId)
                 .orElseGet(() -> pointRepository.save(Point.create(user)));
 
         point.charge(request.amount());

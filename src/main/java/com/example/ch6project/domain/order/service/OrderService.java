@@ -43,7 +43,7 @@ public class OrderService {
             throw new CustomException(ErrorCode.MENU_INACTIVE);
         }
 
-        Point point = pointRepository.findByUserId(userId)
+        Point point = pointRepository.findByUserIdForUpdate(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.POINT_NOT_FOUND));
 
         point.use(menu.getPrice());
