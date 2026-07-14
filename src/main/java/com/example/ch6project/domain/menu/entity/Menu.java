@@ -24,4 +24,8 @@ public class Menu extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private MenuStatus status;
+
+    public boolean isActive() {
+        return this.status == MenuStatus.ACTIVE;
+    }
 }
