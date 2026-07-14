@@ -32,8 +32,8 @@ public class AuthService {
 
         User user = new User(
                 request.loginId(),
-                encodedPassword,
-                request.nickname()
+                request.nickname(),
+                encodedPassword
         );
 
         User savedUser = userRepository.save(user);
