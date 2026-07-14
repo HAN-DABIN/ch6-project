@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 public class Point extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userId", unique = true)
@@ -43,8 +43,13 @@ public class Point extends BaseTimeEntity {
 
     public void use(Long amount) {
         if (amount <= 0) {
+            throw new CustomException(ErrorCode.INVALID_ORDER_AMOUNT);
+        }
+
+        if (this.balance < amount) {
             throw new CustomException(ErrorCode.INSUFFICIENT_POINT);
         }
+
         this.balance -= amount;
     }
 }
