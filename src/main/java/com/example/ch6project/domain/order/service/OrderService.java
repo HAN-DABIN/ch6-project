@@ -9,6 +9,8 @@ import com.example.ch6project.domain.order.dto.OrderResponse;
 import com.example.ch6project.domain.order.entity.Order;
 import com.example.ch6project.domain.order.repository.OrderRepository;
 import com.example.ch6project.domain.payment.entity.Payment;
+import com.example.ch6project.domain.payment.event.PaymentCompletedEvent;
+import com.example.ch6project.domain.payment.event.PaymentCompletedProducer;
 import com.example.ch6project.domain.payment.repository.PaymentRepository;
 import com.example.ch6project.domain.point.entity.Point;
 import com.example.ch6project.domain.point.repository.PointRepository;
@@ -20,6 +22,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 @Service
 @RequiredArgsConstructor
 public class OrderService {
@@ -30,6 +35,7 @@ public class OrderService {
     private final PointRepository pointRepository;
     private final PointHistoryRepository pointHistoryRepository;
     private final PaymentRepository paymentRepository;
+    private final PaymentCompletedProducer paymentCompletedProducer;
 
     @Transactional
     public OrderResponse order(Long userId, OrderRequest request) {
@@ -46,17 +52,33 @@ public class OrderService {
         Point point = pointRepository.findByUserIdForUpdate(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.POINT_NOT_FOUND));
 
+        if (point.getBalance() < menu.getPrice()) {
+            throw new CustomException(ErrorCode.INSUFFICIENT_POINT); // 수정된 예외
+        }
+
         point.use(menu.getPrice());
 
         pointHistoryRepository.save(
-                PointHistory.use(user,menu.getPrice(),point.getBalance())
+                PointHistory.use(user, menu.getPrice(), point.getBalance())
         );
 
         Order order = orderRepository.save(Order.create(user, menu, menu.getPrice()));
 
-        Payment payment = paymentRepository.save(Payment.create(order,user,menu.getPrice()));
+        Payment payment = paymentRepository.save(Payment.create(order, user, menu.getPrice()));
 
-        return OrderResponse.from(order,payment,point);
+        paymentCompletedProducer.send(
+                PaymentCompletedEvent.builder()
+                        .paymentId(payment.getId())
+                        .orderId(order.getId())
+                        .userId(user.getId())
+                        .menuId(menu.getId())
+                        .paymentAmount(payment.getAmount())
+                        .paidAt(LocalDateTime.now().format(
+                                DateTimeFormatter.ISO_DATE_TIME
+                        ))
+                        .build()
+        );
+
+        return OrderResponse.from(order, payment, point);
     }
 }
-
