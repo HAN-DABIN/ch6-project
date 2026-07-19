@@ -16,6 +16,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -62,12 +64,24 @@ public class MenuRankingService {
             }
         }
 
-        return menuOrderCounts.entrySet().stream()
+        List<Map.Entry<Long, Long>> popularMenuEntries = menuOrderCounts.entrySet().stream()
                 .sorted(Map.Entry.<Long, Long>comparingByValue().reversed())
                 .limit(3)
+                .toList();
+
+        List<Long> popularMenuIds = popularMenuEntries.stream()
+                .map(Map.Entry::getKey)
+                .toList();
+
+        Map<Long, Menu> menuMap = menuRepository.findAllById(popularMenuIds).stream()
+                .collect(Collectors.toMap(Menu::getId, Function.identity()));
+
+        return popularMenuEntries.stream()
                 .map(entry -> {
-                    Menu menu = menuRepository.findById(entry.getKey())
-                            .orElseThrow(() -> new CustomException(ErrorCode.MENU_NOT_FOUND));
+                    Menu menu = menuMap.get(entry.getKey());
+                    if (menu == null) {
+                        throw new CustomException(ErrorCode.MENU_NOT_FOUND);
+                    }
 
                     return PopularMenuResponse.from(menu, entry.getValue());
                 })
